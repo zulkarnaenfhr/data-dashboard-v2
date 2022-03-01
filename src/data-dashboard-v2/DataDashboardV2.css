@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan&family=Ubuntu:wght@300&display=swap"); /* font-family: 'Ubuntu', sans-serif; */
+/* font-family: 'League Spartan', sans-serif; */
+
+#dataDashboardV2 {
+    background-color: #e7e7e7;
+    height: 100vh;
+    font-family: "Ubuntu", sans-serif;
+}
+
+#formNavbar {
+    height: 44px;
+    background-color: white;
+    width: 100vw;
+}
+
+.formNavbar-container {
+    float: right;
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.formLabel {
+    font-size: 14px;
+    font-weight: 500;
+    padding-right: 5px;
+}
+
+.selectOption {
+    margin-right: 7px;
+    height: 31px;
+    width: 180px;
+}
+
+#dataDashboard-container {
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-top: 11px;
+    margin-bottom: 11px;
+    border: 1px solid red;
+    height: 724px;
+}
+
+.mapsContent-container {
+    width: 1056px;
+    height: 449px;
+    border: 1px solid red;
+}
+
+.row2 {
+    margin-top: 10px;
+}
+
+.row2-leftSection {
+    width: 540px;
+    border: 1px solid red;
+}
+
+.floating {
+    float: left;
+}
+
+.row2-leftSection-right {
+    margin-left: 10px;
+}
+
+.row2-leftSection-row2 {
+    margin-top: 10px;
+}
+
+.row2-middleSection {
+    width: 516px;
+    border: 1px solid red;
+}
