@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Datadashboardv2 from './data-dashboard-v2/DataDashboardV2';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Datadashboardv2 />
   </React.StrictMode>,
   document.getElementById('root')
 );
