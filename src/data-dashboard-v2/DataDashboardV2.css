@@ -4,6 +4,7 @@
 #dataDashboardV2 {
     background-color: #e7e7e7;
     height: 100vh;
+    max-height: 100vh;
     font-family: "Ubuntu", sans-serif;
 }
 
@@ -13,17 +14,34 @@
     width: 100vw;
 }
 
-.formNavbar-container {
+/* .formNavbar-container {
     float: right;
     height: 44px;
     display: flex;
     align-items: center;
-}
+} */
 
 .formLabel {
     font-size: 14px;
     font-weight: 500;
     padding-right: 5px;
+}
+
+.formNavbar-container {
+    float: left;
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.wilayahApa {
+    padding: 12px;
+    height: 44px;
+    width: 994px;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    float: left;
 }
 
 .selectOption {
@@ -37,14 +55,11 @@
     padding-left: 12px;
     margin-top: 11px;
     margin-bottom: 11px;
-    border: 1px solid red;
-    height: 724px;
 }
 
 .mapsContent-container {
     width: 1056px;
     height: 449px;
-    border: 1px solid red;
 }
 
 .row2 {
@@ -53,7 +68,6 @@
 
 .row2-leftSection {
     width: 540px;
-    border: 1px solid red;
 }
 
 .floating {
@@ -70,5 +84,11 @@
 
 .row2-middleSection {
     width: 516px;
-    border: 1px solid red;
+}
+
+.row1-rightside {
+    width: 471px;
+    position: relative;
+    left: 11px;
+    margin-left: -10px;
 }

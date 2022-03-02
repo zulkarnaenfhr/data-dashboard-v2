@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import Data from "./DataScoringPayakumbuh.json";
+import Data from "./ScoringPayakumbuh.json";
 import "./DataDashboardV2.css";
 import Mapscomponent from "./Component/MapsComponent/MapsComponent";
 import Cardkecil from "./Component/CardKecil/CardKecil";
 import Cardbesar from "./Component/CardBesar/CardBesar";
 import Toparpu from "./Component/TopARPU/TopARPU";
+import Toptvprogram from "./Component/TopTvProgram/TopTvProgram";
+import Topprioritas from "./Component/TopPrioritas/TopPrioritas";
 
 class Datadashboardv2 extends Component {
     constructor(props) {
@@ -45,6 +47,10 @@ class Datadashboardv2 extends Component {
             top3ARPU: [],
             top3ARPUWilayah: [],
             top3ARPUValue: [],
+
+            dataPrioritas: [],
+            dataPrioritasKeyword: [],
+            dataPrioritasTemplate: [],
         };
 
         this.handleKelurahanChange = this.handleKelurahanChange.bind(this);
@@ -59,6 +65,9 @@ class Datadashboardv2 extends Component {
         this.pengelompokanARPU = this.pengelompokanARPU.bind(this);
         this.pengelompokanARPUKecamatanChange = this.pengelompokanARPUKecamatanChange.bind(this);
         this.pengelompokanARPUKelurahanChange = this.pengelompokanARPUKelurahanChange.bind(this);
+        this.perhitunganScoring = this.perhitunganScoring.bind(this);
+        this.perhitunganScoringKecamatanChange = this.perhitunganScoringKecamatanChange.bind(this);
+        this.perhitunganScoringKelurahanChange = this.perhitunganScoringKelurahanChange.bind(this);
     }
 
     handleKelurahanChange = async (event) => {
@@ -82,6 +91,8 @@ class Datadashboardv2 extends Component {
             // akhir perhitungan tv program
 
             await this.pengelompokanARPUKelurahanChange(event.target.value);
+
+            await this.perhitunganScoringKelurahanChange(event.target.value);
 
             // console.log(this.state.dataWithKeyword);
             this.setState({
@@ -126,6 +137,8 @@ class Datadashboardv2 extends Component {
             // akhir perhitungan tv program
 
             await this.pengelompokanARPUKecamatanChange(event.target.value);
+
+            await this.perhitunganScoringKecamatanChange(event.target.value);
 
             this.setState({
                 statusLoadKel: true,
@@ -316,19 +329,19 @@ class Datadashboardv2 extends Component {
 
         // awal perhitungan tv program
         await this.state.data.map((data) => {
-            if (!this.state.tvCategory.includes(data.top_tv_genre_program1) && data.top_tv_genre_program1 !== "") {
+            if (!this.state.tvCategory.includes(data.top_tv_genre_program1) && data.top_tv_genre_program1 !== "-") {
                 this.state.tvCategory.push(data.top_tv_genre_program1);
             }
-            if (!this.state.tvCategory.includes(data.top_tv_genre_program2) && data.top_tv_genre_program2 !== "") {
+            if (!this.state.tvCategory.includes(data.top_tv_genre_program2) && data.top_tv_genre_program2 !== "-") {
                 this.state.tvCategory.push(data.top_tv_genre_program2);
             }
-            if (!this.state.tvCategory.includes(data.top_tv_genre_program3) && data.top_tv_genre_program3 !== "") {
+            if (!this.state.tvCategory.includes(data.top_tv_genre_program3) && data.top_tv_genre_program3 !== "-") {
                 this.state.tvCategory.push(data.top_tv_genre_program3);
             }
-            if (!this.state.tvCategory.includes(data.top_tv_genre_program4) && data.top_tv_genre_program4 !== "") {
+            if (!this.state.tvCategory.includes(data.top_tv_genre_program4) && data.top_tv_genre_program4 !== "-") {
                 this.state.tvCategory.push(data.top_tv_genre_program4);
             }
-            if (!this.state.tvCategory.includes(data.top_tv_genre_program5) && data.top_tv_genre_program5 !== "") {
+            if (!this.state.tvCategory.includes(data.top_tv_genre_program5) && data.top_tv_genre_program5 !== "-") {
                 this.state.tvCategory.push(data.top_tv_genre_program5);
             }
         });
@@ -375,9 +388,105 @@ class Datadashboardv2 extends Component {
         await this.pengelompokanARPU();
         // akhir perhitungan tv program
 
+        await this.perhitunganScoring();
+
         this.setState({
             statusLoad: true,
         });
+    };
+
+    perhitunganScoring = async () => {
+        await this.setState({
+            dataPrioritas: [],
+            dataPrioritasKeyword: [],
+        });
+
+        await this.state.dataKelurahan.map((kelurahan) => {
+            let jumlahNilaiScoring = 0;
+            let jumlahJumlahNilaiScoring = 0;
+            let namaKecamatan = "";
+
+            this.state.data.map((data) => {
+                if (data.desa_kelurahan === kelurahan) {
+                    jumlahNilaiScoring += parseInt(data.nilai);
+                    jumlahJumlahNilaiScoring += 1;
+                    namaKecamatan = data.kecamatan;
+                }
+                // console.log(data.kecamatan);
+            });
+            this.state.dataPrioritas.push({
+                namaKelurahan: kelurahan,
+                nilaiScoring: jumlahNilaiScoring / jumlahJumlahNilaiScoring,
+                namaKecamatan: namaKecamatan,
+            });
+        });
+
+        function compare(a, b) {
+            if (a.nilaiScoring > b.nilaiScoring) {
+                return -1;
+            }
+            if (a.nilaiScoring < b.nilaiScoring) {
+                return 1;
+            }
+            return 0;
+        }
+
+        await this.state.dataPrioritas.sort(compare);
+
+        await this.state.dataPrioritas.map((data, index) => {
+            if (index < 10) {
+                this.state.dataPrioritasKeyword.push({
+                    namaKelurahan: data.namaKelurahan,
+                    nilaiScoring: data.nilaiScoring.toFixed(2),
+                });
+            }
+        });
+        console.log(this.state.dataPrioritasKeyword);
+    };
+
+    perhitunganScoringKecamatanChange = async (keyword) => {
+        await this.setState({
+            dataPrioritasTemplate: [],
+            dataPrioritasKeyword: [],
+        });
+
+        await this.state.dataPrioritas.map((data) => {
+            if (data.namaKecamatan === keyword) {
+                this.state.dataPrioritasTemplate.push({
+                    namaKelurahan: data.namaKelurahan,
+                    nilaiScoring: data.nilaiScoring.toFixed(2),
+                });
+            }
+        });
+
+        await this.state.dataPrioritasTemplate.map((data, index) => {
+            if (index < 10) {
+                this.state.dataPrioritasKeyword.push(data);
+            }
+        });
+    };
+
+    perhitunganScoringKelurahanChange = async (keyword) => {
+        await this.setState({
+            dataPrioritasTemplate: [],
+            dataPrioritasKeyword: [],
+        });
+
+        await this.state.dataPrioritas.map((data) => {
+            if (data.namaKelurahan === keyword) {
+                this.state.dataPrioritasTemplate.push({
+                    namaKelurahan: data.namaKelurahan,
+                    nilaiScoring: data.nilaiScoring.toFixed(2),
+                });
+            }
+        });
+
+        await this.state.dataPrioritasTemplate.map((data, index) => {
+            if (index < 10) {
+                this.state.dataPrioritasKeyword.push(data);
+            }
+        });
+        console.log(this.state.dataPrioritasKeyword);
     };
 
     componentDidMount() {
@@ -404,7 +513,7 @@ class Datadashboardv2 extends Component {
             let namaKecamatan = "";
             this.state.data.map((data) => {
                 if (data.desa_kelurahan === kelurahan) {
-                    if (data.avg_arpu !== "0") {
+                    if (data.avg_arpu !== 0) {
                         jumlahAvgValue += parseInt(data.avg_arpu);
                         jumlahJumlahAvgValue += 1;
                     }
@@ -534,7 +643,9 @@ class Datadashboardv2 extends Component {
                     <div id="dataDashboardV2">
                         <div id="formNavbar">
                             <div className="formNavbar-container">
-                                <form action="">
+                                <div className="wilayahApa">{apa}</div>
+
+                                <form className="formContainer" action="">
                                     <label className="formLabel" htmlFor="">
                                         Kecamatan :
                                     </label>
@@ -560,6 +671,14 @@ class Datadashboardv2 extends Component {
                             <div className="row">
                                 <div className="mapsContent-container">
                                     <Mapscomponent keyword={this.state.pilKeyword} />
+                                </div>
+                                <div className="row1-rightside">
+                                    <div className="floating">
+                                        <Toptvprogram tvCategoryData={this.state.tvCategoryData} />
+                                    </div>
+                                    <div className="floating">
+                                        <Topprioritas scoringPrioritas={this.state.dataPrioritasKeyword} />
+                                    </div>
                                 </div>
                             </div>
                             <div className="row row2">
@@ -587,7 +706,7 @@ class Datadashboardv2 extends Component {
                                 {/* <div className="row2-rightSection">
                                     <button
                                         onClick={() => {
-                                            console.log(this.state.topARPU);
+                                            console.log(this.state.tvCategoryJumlah);
                                         }}
                                     >
                                         tes

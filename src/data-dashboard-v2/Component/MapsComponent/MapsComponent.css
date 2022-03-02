@@ -1,3 +1,7 @@
 #mapsComponent {
     padding-top: 5px;
 }
+
+.hilang {
+    display: none;
+}

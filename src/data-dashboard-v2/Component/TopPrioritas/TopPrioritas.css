@@ -1,0 +1,14 @@
+#topPrioritas {
+    width: 221.5px;
+    border: 1px solid #a9a9a9;
+    height: 444px;
+    margin-left: 14px;
+    background-color: white;
+}
+
+.topPrioritas-judul {
+    height: 28px;
+    width: 211.5px;
+    padding-left: 8px;
+    padding-top: 3px;
+}
