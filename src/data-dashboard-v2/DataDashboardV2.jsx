@@ -7,6 +7,7 @@ import Cardbesar from "./Component/CardBesar/CardBesar";
 import Toparpu from "./Component/TopARPU/TopARPU";
 import Toptvprogram from "./Component/TopTvProgram/TopTvProgram";
 import Topprioritas from "./Component/TopPrioritas/TopPrioritas";
+import Toppelangganhvc from "./TopPelangganHVC/TopPelangganHVC";
 
 class Datadashboardv2 extends Component {
     constructor(props) {
@@ -41,7 +42,7 @@ class Datadashboardv2 extends Component {
             tvCategoryJumlah: [], // jumlah per masing masing kategori
             tvCategoryData: [], // data lengkap tv program
 
-            ARPUSetiapDataKelurahan: [],
+            ARPUSetiapDataKelurahan: [], // data arpu setiap kelurahan
             topARPU: [],
             topARPUKeyword: [],
             top3ARPU: [],
@@ -51,6 +52,12 @@ class Datadashboardv2 extends Component {
             dataPrioritas: [],
             dataPrioritasKeyword: [],
             dataPrioritasTemplate: [],
+
+            dataHVC: [],
+            dataHVCKeyword: [],
+            top5HVCWilayah: [],
+            top5HVCValue: [],
+            dataHVCTemplate: [],
         };
 
         this.handleKelurahanChange = this.handleKelurahanChange.bind(this);
@@ -68,6 +75,9 @@ class Datadashboardv2 extends Component {
         this.perhitunganScoring = this.perhitunganScoring.bind(this);
         this.perhitunganScoringKecamatanChange = this.perhitunganScoringKecamatanChange.bind(this);
         this.perhitunganScoringKelurahanChange = this.perhitunganScoringKelurahanChange.bind(this);
+        this.perhitunganPelangganHVC = this.perhitunganPelangganHVC.bind(this);
+        this.perhitunganPelangganHVCKecamatanChange = this.perhitunganPelangganHVCKecamatanChange.bind(this);
+        this.perhitunganPelangganHVCKelurahanChange = this.perhitunganPelangganHVCKelurahanChange.bind(this);
     }
 
     handleKelurahanChange = async (event) => {
@@ -93,6 +103,8 @@ class Datadashboardv2 extends Component {
             await this.pengelompokanARPUKelurahanChange(event.target.value);
 
             await this.perhitunganScoringKelurahanChange(event.target.value);
+
+            await this.perhitunganPelangganHVCKelurahanChange(event.target.value);
 
             // console.log(this.state.dataWithKeyword);
             this.setState({
@@ -139,6 +151,8 @@ class Datadashboardv2 extends Component {
             await this.pengelompokanARPUKecamatanChange(event.target.value);
 
             await this.perhitunganScoringKecamatanChange(event.target.value);
+
+            await this.perhitunganPelangganHVCKecamatanChange(event.target.value);
 
             this.setState({
                 statusLoadKel: true,
@@ -390,8 +404,111 @@ class Datadashboardv2 extends Component {
 
         await this.perhitunganScoring();
 
+        await this.perhitunganPelangganHVC();
+
         this.setState({
             statusLoad: true,
+        });
+    };
+
+    perhitunganPelangganHVC = async () => {
+        await this.setState({
+            dataHVC: [],
+            dataHVCKeyword: [],
+            top5HVCWilayah: [],
+            top5HVCValue: [],
+        });
+
+        await this.state.dataKelurahan.map((kelurahan) => {
+            let jumlahHVC = 0;
+            let namaKecamatan = "";
+
+            this.state.data.map((data) => {
+                if (data.desa_kelurahan === kelurahan) {
+                    jumlahHVC += parseInt(data.jml_plg_hvc);
+                    namaKecamatan = data.kecamatan;
+                }
+            });
+            this.state.dataHVC.push({
+                namaKelurahan: kelurahan,
+                jumlahPelangganHVC: jumlahHVC,
+                namaKecamatan: namaKecamatan,
+            });
+        });
+
+        function compare(a, b) {
+            if (a.jumlahPelangganHVC > b.jumlahPelangganHVC) {
+                return -1;
+            }
+            if (a.jumlahPelangganHVC < b.jumlahPelangganHVC) {
+                return 1;
+            }
+            return 0;
+        }
+
+        await this.state.dataHVC.sort(compare);
+
+        await this.state.dataHVC.map((data, index) => {
+            if (index < 3) {
+                this.state.dataHVCKeyword.push({
+                    namaKelurahan: data.namaKelurahan,
+                    jumlahPelangganHVC: data.jumlahPelangganHVC,
+                });
+                this.state.top5HVCWilayah.push(data.namaKelurahan);
+                this.state.top5HVCValue.push(data.jumlahPelangganHVC);
+            }
+        });
+    };
+
+    perhitunganPelangganHVCKecamatanChange = async (keyword) => {
+        await this.setState({
+            dataHVCTemplate: [],
+            dataHVCKeyword: [],
+            top5HVCWilayah: [],
+            top5HVCValue: [],
+        });
+
+        await this.state.dataHVC.map((data) => {
+            if (data.namaKecamatan === keyword) {
+                this.state.dataHVCTemplate.push({
+                    namaKelurahan: data.namaKelurahan,
+                    jumlahPelangganHVC: data.jumlahPelangganHVC,
+                });
+            }
+        });
+
+        await this.state.dataHVCTemplate.map((data, index) => {
+            if (index < 3) {
+                this.state.dataHVCKeyword.push(data);
+                this.state.top5HVCWilayah.push(data.namaKelurahan);
+                this.state.top5HVCValue.push(data.jumlahPelangganHVC);
+            }
+        });
+    };
+
+    perhitunganPelangganHVCKelurahanChange = async (keyword) => {
+        await this.setState({
+            dataHVCTemplate: [],
+            dataHVCKeyword: [],
+            top5HVCWilayah: [],
+            top5HVCValue: [],
+        });
+
+        await this.state.dataHVC.map((data) => {
+            if (data.namaKelurahan === keyword) {
+                this.state.dataHVCTemplate.push({
+                    namaKelurahan: data.namaKelurahan,
+                    jumlahPelangganHVC: data.jumlahPelangganHVC,
+                });
+            }
+        });
+
+        await this.state.dataHVCTemplate.map((data, index) => {
+            if (index < 3) {
+                this.state.dataHVCKeyword.push(data);
+                this.state.top5HVCWilayah.push(data.namaKelurahan);
+                this.state.top5HVCValue.push(data.jumlahPelangganHVC);
+            }
         });
     };
 
@@ -412,7 +529,6 @@ class Datadashboardv2 extends Component {
                     jumlahJumlahNilaiScoring += 1;
                     namaKecamatan = data.kecamatan;
                 }
-                // console.log(data.kecamatan);
             });
             this.state.dataPrioritas.push({
                 namaKelurahan: kelurahan,
@@ -441,7 +557,6 @@ class Datadashboardv2 extends Component {
                 });
             }
         });
-        console.log(this.state.dataPrioritasKeyword);
     };
 
     perhitunganScoringKecamatanChange = async (keyword) => {
@@ -486,7 +601,6 @@ class Datadashboardv2 extends Component {
                 this.state.dataPrioritasKeyword.push(data);
             }
         });
-        console.log(this.state.dataPrioritasKeyword);
     };
 
     componentDidMount() {
@@ -703,15 +817,9 @@ class Datadashboardv2 extends Component {
                                 <div className="row2-middleSection">
                                     <Toparpu labelWilayah={this.state.top3ARPUWilayah} valueARPU={this.state.top3ARPUValue} />
                                 </div>
-                                {/* <div className="row2-rightSection">
-                                    <button
-                                        onClick={() => {
-                                            console.log(this.state.tvCategoryJumlah);
-                                        }}
-                                    >
-                                        tes
-                                    </button>
-                                </div> */}
+                                <div className="row2-rightSection">
+                                    <Toppelangganhvc labelWilayah={this.state.top5HVCWilayah} nilai={this.state.top5HVCValue} />
+                                </div>
                             </div>
                         </div>
                     </div>
